@@ -10,8 +10,8 @@ class PortfolioFormHandler {
         this.emailJSConfig = {
             publicKey: 'JoiXb9s3kPui-MuSM', // Get from EmailJS dashboard
             serviceId: 'service_bg9ww4m',          // Get from EmailJS dashboard  
-            adminTemplateId: 'template_admin_notification',      // Admin notification template
-            userTemplateId: 'template_user_confirmation'         // User confirmation template
+            adminTemplateId: 'template_admin_notify',      // Admin notification template
+            userTemplateId: 'template_user_confirm'         // User confirmation template
         };
         
         this.init();
