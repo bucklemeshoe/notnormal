@@ -299,10 +299,30 @@ class PortfolioFormHandler {
 
     async submitForm() {
         // Prepare form data for Netlify
-        const formData = new FormData(this.form);
+        const formData = new FormData();
         
-        // Add the form name for Netlify
+        // Add form name first for Netlify detection
         formData.append('form-name', 'portfolio-submission');
+        
+        // Add all form fields manually to ensure proper handling
+        const formElements = this.form.querySelectorAll('input, select, textarea');
+        formElements.forEach(element => {
+            if (element.type === 'file') {
+                // Handle file upload specifically
+                if (element.files.length > 0) {
+                    formData.append(element.name, element.files[0]);
+                    console.log(`File uploaded: ${element.files[0].name} (${element.files[0].size} bytes)`);
+                }
+            } else if (element.type === 'checkbox') {
+                // Handle checkbox
+                if (element.checked) {
+                    formData.append(element.name, element.value || 'on');
+                }
+            } else if (element.name && element.value) {
+                // Handle all other form fields
+                formData.append(element.name, element.value);
+            }
+        });
         
         // Extract form data for EmailJS
         const emailData = this.extractFormDataForEmail(formData);
@@ -317,7 +337,7 @@ class PortfolioFormHandler {
             }
         }
 
-        // Submit to Netlify Forms (FormData handles files properly)
+        // Submit to Netlify Forms
         const response = await fetch('/', {
             method: 'POST',
             body: formData
@@ -326,6 +346,8 @@ class PortfolioFormHandler {
         if (!response.ok) {
             throw new Error(`Submission failed: ${response.status}`);
         }
+        
+        console.log('Form submitted successfully to Netlify');
         
         // Send emails via EmailJS if configured
         await this.sendEmailNotifications(emailData);
