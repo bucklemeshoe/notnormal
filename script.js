@@ -281,7 +281,7 @@ class PortfolioFormHandler {
             }
         }
 
-        // Submit to Netlify Forms
+        // Submit to Netlify Forms (FormData handles files properly)
         const response = await fetch('/', {
             method: 'POST',
             body: formData
