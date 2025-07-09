@@ -6,6 +6,14 @@ class PortfolioFormHandler {
         this.fileHelper = document.querySelector('.file-input-helper');
         this.submitButton = document.querySelector('.btn-submit');
         
+        // EmailJS Configuration - Update these with your EmailJS account details
+        this.emailJSConfig = {
+            publicKey: 'YOUR_EMAILJS_PUBLIC_KEY', // Get from EmailJS dashboard
+            serviceId: 'YOUR_SERVICE_ID',          // Get from EmailJS dashboard  
+            adminTemplateId: 'YOUR_ADMIN_TEMPLATE_ID',      // Create in EmailJS
+            userTemplateId: 'YOUR_USER_TEMPLATE_ID'         // Create in EmailJS
+        };
+        
         this.init();
     }
 
@@ -296,6 +304,9 @@ class PortfolioFormHandler {
         // Add the form name for Netlify
         formData.append('form-name', 'portfolio-submission');
         
+        // Extract form data for EmailJS
+        const emailData = this.extractFormDataForEmail(formData);
+        
         // Log form data for verification
         console.log('Submitting to Netlify Forms:');
         for (let [key, value] of formData.entries()) {
@@ -316,7 +327,87 @@ class PortfolioFormHandler {
             throw new Error(`Submission failed: ${response.status}`);
         }
         
+        // Send emails via EmailJS if configured
+        await this.sendEmailNotifications(emailData);
+        
         return { success: true };
+    }
+
+    extractFormDataForEmail(formData) {
+        const data = {};
+        for (let [key, value] of formData.entries()) {
+            if (value instanceof File) {
+                data[key] = value.name ? `${value.name} (${this.formatFileSize(value.size)})` : 'No file uploaded';
+            } else {
+                data[key] = value;
+            }
+        }
+        
+        // Add formatted timestamp
+        data.submissionDate = new Date().toLocaleString();
+        data.siteUrl = window.location.origin;
+        
+        return data;
+    }
+
+    async sendEmailNotifications(emailData) {
+        // Skip if EmailJS not configured
+        if (!this.isEmailJSConfigured()) {
+            console.log('EmailJS not configured - skipping email notifications');
+            return;
+        }
+
+        try {
+            // Initialize EmailJS
+            emailjs.init(this.emailJSConfig.publicKey);
+            
+            // Send admin notification
+            await emailjs.send(
+                this.emailJSConfig.serviceId,
+                this.emailJSConfig.adminTemplateId,
+                {
+                    to_email: 'your-email@domain.com', // Update with your email
+                    from_name: emailData.fullName,
+                    from_email: emailData.email,
+                    subject: `New Friday Five Portfolio - ${emailData.fullName}`,
+                    fullName: emailData.fullName,
+                    email: emailData.email,
+                    linkedin: emailData.linkedin || 'Not provided',
+                    location: emailData.location || 'Not provided',
+                    portfolioLink: emailData.portfolioLink,
+                    designFocus: emailData.designFocus,
+                    bio: emailData.bio || 'Not provided',
+                    opportunities: emailData.opportunities,
+                    portfolioFile: emailData.portfolioFile || 'No file uploaded',
+                    submissionDate: emailData.submissionDate,
+                    siteUrl: emailData.siteUrl
+                }
+            );
+
+            // Send user confirmation
+            await emailjs.send(
+                this.emailJSConfig.serviceId,
+                this.emailJSConfig.userTemplateId,
+                {
+                    to_email: emailData.email,
+                    to_name: emailData.fullName,
+                    portfolioLink: emailData.portfolioLink,
+                    designFocus: emailData.designFocus,
+                    opportunities: emailData.opportunities
+                }
+            );
+
+            console.log('Email notifications sent successfully');
+        } catch (error) {
+            console.error('Failed to send email notifications:', error);
+            // Don't throw error - form submission should still succeed
+        }
+    }
+
+    isEmailJSConfigured() {
+        return this.emailJSConfig.publicKey !== 'YOUR_EMAILJS_PUBLIC_KEY' &&
+               this.emailJSConfig.serviceId !== 'YOUR_SERVICE_ID' &&
+               typeof emailjs !== 'undefined';
     }
 
     setLoadingState(isLoading) {
