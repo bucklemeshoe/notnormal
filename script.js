@@ -389,11 +389,13 @@ class PortfolioFormHandler {
                 this.emailJSConfig.serviceId,
                 this.emailJSConfig.userTemplateId,
                 {
-                    to_email: emailData.email,
+                    email: emailData.email,           // Fixed: matches {{email}} in template
                     to_name: emailData.fullName,
+                    fullName: emailData.fullName,     // Added for consistency
                     portfolioLink: emailData.portfolioLink,
                     designFocus: emailData.designFocus,
-                    opportunities: emailData.opportunities
+                    opportunities: emailData.opportunities,
+                    submissionDate: emailData.submissionDate
                 }
             );
 
