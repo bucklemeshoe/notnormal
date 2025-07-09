@@ -1,5 +1,4 @@
-/* Custom Font Face for Phatt (if available) */
-/* Using Google Fonts instead of local Phatt font */
+/* Google Fonts Import */
 @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap');
 
 /* CSS Reset and Base Styles */
