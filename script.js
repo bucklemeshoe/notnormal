@@ -19,13 +19,33 @@ class PortfolioFormHandler {
         // Form submission
         this.form.addEventListener('submit', (e) => this.handleSubmit(e));
         
-        // Real-time validation
-        this.form.addEventListener('input', (e) => this.validateField(e.target));
-        this.form.addEventListener('change', (e) => this.validateField(e.target));
+        // Mark fields as touched when users interact with them
+        this.form.addEventListener('focus', (e) => {
+            if (e.target.matches('input, select, textarea')) {
+                e.target.dataset.touched = 'true';
+            }
+        }, true);
         
-        // Portfolio link validation
-        const portfolioLink = document.getElementById('portfolioLink');
-        portfolioLink.addEventListener('blur', () => this.validatePortfolioLink(portfolioLink));
+        this.form.addEventListener('blur', (e) => {
+            if (e.target.matches('input, select, textarea')) {
+                e.target.dataset.touched = 'true';
+                this.validateField(e.target);
+            }
+        }, true);
+        
+        // Real-time validation for touched fields
+        this.form.addEventListener('input', (e) => {
+            if (e.target.dataset.touched) {
+                this.validateField(e.target);
+            }
+        });
+        
+        this.form.addEventListener('change', (e) => {
+            if (e.target.matches('input, select, textarea')) {
+                e.target.dataset.touched = 'true';
+                this.validateField(e.target);
+            }
+        });
     }
 
     setupFileUpload() {
@@ -126,6 +146,11 @@ class PortfolioFormHandler {
         
         // Remove previous validation classes
         field.classList.remove('valid', 'invalid');
+        
+        // Only validate if user has interacted with the field
+        if (!field.dataset.touched) {
+            return true;
+        }
         
         // Skip validation if field is empty and not required
         if (!value && !field.required) {
@@ -315,7 +340,8 @@ class PortfolioFormHandler {
             We'll review your submission and notify you by Thursday if you're selected for our Friday feature.
         `;
         
-        this.form.parentNode.insertBefore(message, this.form);
+        // Insert message AFTER the form instead of before
+        this.form.parentNode.insertBefore(message, this.form.nextSibling);
         
         // Scroll to success message
         message.scrollIntoView({ behavior: 'smooth' });
@@ -328,14 +354,18 @@ class PortfolioFormHandler {
 
     showMessage(text, type = 'info') {
         // Remove existing messages
-        const existingMessages = document.querySelectorAll('.form-success, .form-error');
+        const existingMessages = document.querySelectorAll('.form-success, .form-error, .form-info');
         existingMessages.forEach(msg => msg.remove());
         
         const message = document.createElement('div');
         message.className = `form-${type}`;
         message.textContent = text;
         
-        this.form.parentNode.insertBefore(message, this.form);
+        // Insert message AFTER the form instead of before
+        this.form.parentNode.insertBefore(message, this.form.nextSibling);
+        
+        // Scroll to message so user can see it
+        message.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         
         // Auto remove after 5 seconds
         setTimeout(() => {
