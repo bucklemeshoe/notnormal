@@ -8,10 +8,10 @@ class PortfolioFormHandler {
         
         // EmailJS Configuration - Update these with your EmailJS account details
         this.emailJSConfig = {
-            publicKey: 'YOUR_EMAILJS_PUBLIC_KEY', // Get from EmailJS dashboard
-            serviceId: 'YOUR_SERVICE_ID',          // Get from EmailJS dashboard  
-            adminTemplateId: 'YOUR_ADMIN_TEMPLATE_ID',      // Create in EmailJS
-            userTemplateId: 'YOUR_USER_TEMPLATE_ID'         // Create in EmailJS
+            publicKey: 'JoiXb9s3kPui-MuSM', // Get from EmailJS dashboard
+            serviceId: 'service_bg9ww4m',          // Get from EmailJS dashboard  
+            adminTemplateId: 'template_admin_notification',      // Admin notification template
+            userTemplateId: 'template_user_confirmation'         // User confirmation template
         };
         
         this.init();
@@ -366,7 +366,7 @@ class PortfolioFormHandler {
                 this.emailJSConfig.serviceId,
                 this.emailJSConfig.adminTemplateId,
                 {
-                    to_email: 'your-email@domain.com', // Update with your email
+                    to_email: 'jared@makefriendly.co.za', // Update with your email
                     from_name: emailData.fullName,
                     from_email: emailData.email,
                     subject: `New Friday Five Portfolio - ${emailData.fullName}`,
