@@ -66,7 +66,7 @@ h4 {
 
 /* Hero Section */
 .hero {
-    background: #0a0a0a url('bg.png') center/cover no-repeat;
+    background: #0a0a0a;
     color: white;
     padding: 80px 0;
     min-height: 769px;
@@ -77,6 +77,23 @@ h4 {
     overflow: hidden;
 }
 
+/* Progressive background loading - placeholder gradient */
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+    z-index: 0;
+    transition: opacity 0.3s ease;
+}
+
+.hero.bg-loaded::before {
+    opacity: 0;
+}
+
 .hero::after {
     content: '';
     position: absolute;
@@ -84,11 +101,37 @@ h4 {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.4);
+    background: url('bg-optimized.jpg') center/cover no-repeat;
+    opacity: 0;
+    transition: opacity 0.5s ease;
     z-index: 1;
 }
 
-.hero::before {
+/* Mobile optimized background */
+@media (max-width: 768px) {
+    .hero::after {
+        background: url('bg-mobile.jpg') center/cover no-repeat;
+    }
+}
+
+.hero.bg-loaded::after {
+    opacity: 1;
+}
+
+
+
+.hero .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 2;
+}
+
+/* Floating background effect */
+.hero .container::before {
     content: '';
     position: absolute;
     top: -50%;

@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NotNormal Friday Five - Submit Your Portfolio</title>
     <link rel="icon" type="image/jpeg" href="notnormal_logo.jpg">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="bg-optimized.jpg" as="image" type="image/jpeg" media="(min-width: 769px)">
+    <link rel="preload" href="bg-mobile.jpg" as="image" type="image/jpeg" media="(max-width: 768px)">
+    <link rel="preload" href="notnormal_logo.jpg" as="image" type="image/jpeg">
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black:wght@400&display=swap" rel="stylesheet">
@@ -12,6 +22,7 @@
 <body>
     <div class="trail-line"></div>
     <header class="hero">
+        <div class="overlay"></div>
         <div class="container">
             <div class="hero-content">
                 <div class="logo-container">

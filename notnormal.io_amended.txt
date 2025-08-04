@@ -1,0 +1,69 @@
+; Domain: notnormal.io
+; Exported (y-m-d hh:mm:ss): 2025-07-09 08:06:27
+; AMENDED: Added fridayfive subdomain for Netlify site
+;
+; This file is intended for use for informational and archival
+; purposes ONLY and MUST be edited before use on a production
+; DNS server.
+;
+; In particular, you must update the SOA record with the correct
+; authoritative name server and contact e-mail address information,
+; and add the correct NS records for the name servers which will
+; be authoritative for this domain.
+;
+; For further information, please consult the BIND documentation
+; located on the following website:
+;
+; http://www.isc.org/
+;
+; And RFC 1035:
+;
+; http://www.ietf.org/rfc/rfc1035.txt
+;
+; Please note that we do NOT offer technical support for any use
+; of this zone data, the BIND name server, or any other third-
+; party DNS software.
+;
+; Use at your own risk.
+
+
+$ORIGIN notnormal.io.
+
+; SOA Record
+@	3600	 IN 	SOA	ns43.domaincontrol.com.	dns.jomax.net. (
+					2025061000
+					28800
+					7200
+					604800
+					3600
+					) 
+
+; A Record
+@	10800	 IN 	A	92.204.221.119
+admin	10800	 IN 	A	92.204.221.119
+mail	10800	 IN 	A	92.204.221.119
+
+; TXT Record
+@	3600	 IN 	TXT	"google-site-verification=-dqo6gBMrtdhfuWVOnwFJr9uIAhWXg2N3Zeq0fl_SZg"
+@	3600	 IN 	TXT	"v=spf1 include:dc-aa8e722993._spfm.notnormal.io ~all"
+dc-aa8e722993._spfm	3600	 IN 	TXT	"v=spf1 include:_spf.google.com ~all"
+
+; CNAME Record
+cpanel	10800	 IN 	CNAME	@
+fridayfive	3600	 IN 	CNAME	YOUR-NETLIFY-SITE-NAME.netlify.app.
+webdisk	10800	 IN 	CNAME	@
+webdisk.admin	10800	 IN 	CNAME	@
+whm	10800	 IN 	CNAME	@
+www	10800	 IN 	CNAME	@
+www.admin	10800	 IN 	CNAME	@
+
+; NS Record
+@	3600	 IN 	NS	ns43.domaincontrol.com.
+@	3600	 IN 	NS	ns44.domaincontrol.com.
+
+; MX Record
+@	3600	 IN 	MX	1	aspmx.l.google.com.
+@	3600	 IN 	MX	10	alt3.aspmx.l.google.com.
+@	3600	 IN 	MX	10	alt4.aspmx.l.google.com.
+@	3600	 IN 	MX	5	alt1.aspmx.l.google.com.
+@	3600	 IN 	MX	5	alt2.aspmx.l.google.com. 

@@ -719,3 +719,37 @@ window.addEventListener('scroll', function() {
     clearTimeout(scrollTimeout);
     scrollTimeout = setTimeout(positionTrailLine, 10);
 }); 
+
+// Progressive background loading for hero section
+function initProgressiveBackground() {
+    const hero = document.querySelector('.hero');
+    if (!hero) return;
+    
+    const bgImage = new Image();
+    
+    // Show placeholder immediately
+    hero.style.background = 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%)';
+    
+    // Choose appropriate image based on screen size
+    const isMobile = window.innerWidth <= 768;
+    const imageSrc = isMobile ? 'bg-mobile.jpg' : 'bg-optimized.jpg';
+    
+    // Load the background image
+    bgImage.onload = function() {
+        // Add loaded class to trigger CSS transition
+        hero.classList.add('bg-loaded');
+    };
+    
+    bgImage.onerror = function() {
+        console.warn('Background image failed to load, using fallback');
+        // Keep the gradient background as fallback
+    };
+    
+    // Start loading the image
+    bgImage.src = imageSrc;
+}
+
+// Initialize progressive background loading when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    initProgressiveBackground();
+}); 
