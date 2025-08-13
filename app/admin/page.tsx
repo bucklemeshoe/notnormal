@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuCheckboxItem, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   Search,
@@ -22,6 +22,10 @@ import {
   Copy,
   X,
   Trash2,
+  Eye,
+  ExternalLink,
+  Settings,
+  Filter,
 } from "lucide-react"
 import Image from "next/image"
 
@@ -74,7 +78,40 @@ function AdminDashboardContent() {
   const [selectedEntry, setSelectedEntry] = useState<TransformedSubmission | null>(null)
   const [activeTab, setActiveTab] = useState("all")
   const [checkedSubmissions, setCheckedSubmissions] = useState<Set<string>>(new Set())
+  
+  // Initialize column visibility from localStorage or defaults
+  const [visibleColumns, setVisibleColumns] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('admin-column-visibility')
+      if (saved) {
+        try {
+          return JSON.parse(saved)
+        } catch (error) {
+          console.warn('Failed to parse saved column visibility:', error)
+        }
+      }
+    }
+    return {
+      name: true,
+      email: true,
+      linkedin: true,
+      portfolio: true,
+      roleType: true,
+      seeking: true,
+      location: true,
+      bio: true,
+      submissionDate: true,
+      actions: true,
+    }
+  })
   const itemsPerPage = 25
+
+  // Save column visibility to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('admin-column-visibility', JSON.stringify(visibleColumns))
+    }
+  }, [visibleColumns])
 
   // Fetch submissions from Supabase on component mount
   useEffect(() => {
@@ -246,6 +283,43 @@ function AdminDashboardContent() {
     }
   }
 
+  const toggleColumnVisibility = (column: keyof typeof visibleColumns) => {
+    setVisibleColumns(prev => ({
+      ...prev,
+      [column]: !prev[column]
+    }))
+  }
+
+  const setAllColumnsVisible = () => {
+    setVisibleColumns({
+      name: true,
+      email: true,
+      linkedin: true,
+      portfolio: true,
+      roleType: true,
+      seeking: true,
+      location: true,
+      bio: true,
+      submissionDate: true,
+      actions: true,
+    })
+  }
+
+  const setEssentialColumnsVisible = () => {
+    setVisibleColumns({
+      name: true,
+      email: false,
+      linkedin: false,
+      portfolio: true,
+      roleType: true,
+      seeking: false,
+      location: true,
+      bio: false,
+      submissionDate: true,
+      actions: true,
+    })
+  }
+
   const getSortIcon = (field: SortField) => {
     if (sortField !== field) return <ArrowUpDown className="w-4 h-4" />
     if (sortDirection === "asc") return <ArrowUp className="w-4 h-4" />
@@ -335,7 +409,6 @@ function AdminDashboardContent() {
               height={40}
               className="rounded-lg"
             />
-            <h1 className="text-2xl font-bold text-foreground">Admin</h1>
           </div>
           <div className="flex items-center gap-3">
             <Button variant="outline" onClick={logout}>Sign Out</Button>
@@ -345,32 +418,202 @@ function AdminDashboardContent() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
+        {/* Page Heading */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-foreground mb-4">Admin</h1>
+          <div className="h-px bg-border"></div>
+        </div>
+        
         <Card>
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold">Form Submissions</CardTitle>
-
-            {/* Search and Actions */}
+          <CardHeader className="pb-3">
+            {/* Table Header: Title + Action Button */}
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-              <div className="relative flex-1 max-w-sm">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <Input
-                  placeholder="Search submissions..."
-                  value={searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value)
-                    setCurrentPage(1) // Reset to first page when searching
-                  }}
-                  className="pl-10"
-                />
+              <div className="flex items-center gap-3">
+                <CardTitle className="text-lg font-semibold">Form Submissions</CardTitle>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => window.open('/', '_blank')}
+                  className="p-2 h-auto text-muted-foreground hover:text-foreground"
+                  title="View submission form"
+                >
+                  <Eye className="w-4 h-4" />
+                </Button>
               </div>
-              <Button onClick={pickRandomFive} variant="outline" className="flex items-center gap-2 bg-transparent">
+              <Button onClick={pickRandomFive} variant="default" className="flex items-center gap-2 bg-black hover:bg-gray-800 text-white">
                 <Shuffle className="w-4 h-4" />
-                Pick 5 at Random
+                Pick Random
               </Button>
             </div>
           </CardHeader>
 
           <CardContent>
+
+            {/* Toolbar */}
+            <div className="mb-6 p-4 bg-muted/50 rounded-lg border">
+              <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+                {/* Left: Search */}
+                <div className="relative flex-1 max-w-sm">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                  <Input
+                    placeholder="Search submissions..."
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value)
+                      setCurrentPage(1) // Reset to first page when searching
+                    }}
+                    className="pl-10 bg-background"
+                  />
+                </div>
+
+                {/* Center: Custom Tab Buttons */}
+                <div className="flex-1 max-w-md">
+                  <div className="inline-flex h-10 items-center justify-center rounded-md bg-background border p-1 text-muted-foreground shadow-sm">
+                    <button
+                      onClick={() => setActiveTab("new")}
+                      className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${
+                        activeTab === "new" 
+                          ? "bg-primary text-primary-foreground shadow-sm" 
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      }`}
+                    >
+                      New ({submissions.filter(s => !checkedSubmissions.has(s.id)).length})
+                    </button>
+                    <button
+                      onClick={() => setActiveTab("selected")}
+                      className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${
+                        activeTab === "selected" 
+                          ? "bg-primary text-primary-foreground shadow-sm" 
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      }`}
+                    >
+                      Selected ({checkedSubmissions.size})
+                    </button>
+                    <button
+                      onClick={() => setActiveTab("all")}
+                      className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${
+                        activeTab === "all" 
+                          ? "bg-primary text-primary-foreground shadow-sm" 
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      }`}
+                    >
+                      All ({submissions.length})
+                    </button>
+                  </div>
+                </div>
+
+                {/* Right: Column Filter Dropdown */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      className="flex items-center gap-2 bg-background"
+                    >
+                      <Filter className="w-4 h-4" />
+                      Columns
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>Show/Hide Columns</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    
+                    {/* Quick Actions */}
+                    <div className="flex gap-1 p-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 px-2 text-xs flex-1"
+                        onClick={setAllColumnsVisible}
+                      >
+                        Show All
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 px-2 text-xs flex-1"
+                        onClick={setEssentialColumnsVisible}
+                      >
+                        Essential
+                      </Button>
+                    </div>
+                    <DropdownMenuSeparator />
+                    
+                    {/* Column Checkboxes */}
+                    <DropdownMenuCheckboxItem
+                      checked={visibleColumns.name}
+                      onCheckedChange={() => toggleColumnVisibility('name')}
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      Name
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={visibleColumns.email}
+                      onCheckedChange={() => toggleColumnVisibility('email')}
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      Email
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={visibleColumns.linkedin}
+                      onCheckedChange={() => toggleColumnVisibility('linkedin')}
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      LinkedIn
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={visibleColumns.portfolio}
+                      onCheckedChange={() => toggleColumnVisibility('portfolio')}
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      Portfolio
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={visibleColumns.roleType}
+                      onCheckedChange={() => toggleColumnVisibility('roleType')}
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      Role Type
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={visibleColumns.seeking}
+                      onCheckedChange={() => toggleColumnVisibility('seeking')}
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      Seeking
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={visibleColumns.location}
+                      onCheckedChange={() => toggleColumnVisibility('location')}
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      Location
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={visibleColumns.bio}
+                      onCheckedChange={() => toggleColumnVisibility('bio')}
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      Bio
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={visibleColumns.submissionDate}
+                      onCheckedChange={() => toggleColumnVisibility('submissionDate')}
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      Date
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={visibleColumns.actions}
+                      onCheckedChange={() => toggleColumnVisibility('actions')}
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      Actions
+                    </DropdownMenuCheckboxItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+
             {/* Loading State */}
             {loading ? (
               <div className="text-center py-8">
@@ -378,87 +621,100 @@ function AdminDashboardContent() {
                 <p className="text-muted-foreground mt-2">Loading submissions...</p>
               </div>
             ) : (
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="new">New ({submissions.filter(s => !checkedSubmissions.has(s.id)).length})</TabsTrigger>
-                  <TabsTrigger value="selected">Selected ({checkedSubmissions.size})</TabsTrigger>
-                  <TabsTrigger value="all">All ({submissions.length})</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value={activeTab} className="mt-6">
+              <div>
                   {/* Table */}
                   <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left py-3 px-2 w-10">
-                      <span className="font-medium">Select</span>
+                    <th className="text-center py-3 px-2 w-10">
+                      <span className="font-medium text-sm">Select</span>
                     </th>
-                    <th className="text-left py-3 px-2">
-                      <Button
-                        variant="ghost"
-                        onClick={() => handleSort("name")}
-                        className="h-auto p-0 font-medium flex items-center gap-1"
-                      >
-                        Name
-                        {getSortIcon("name")}
-                      </Button>
-                    </th>
-                    <th className="text-left py-3 px-2 hidden md:table-cell">
-                      <span className="font-medium">Email</span>
-                    </th>
-                    <th className="text-left py-3 px-2 hidden sm:table-cell">
-                      <span className="font-medium">LinkedIn</span>
-                    </th>
-                    <th className="text-left py-3 px-2 hidden lg:table-cell">
-                      <span className="font-medium">Portfolio</span>
-                    </th>
-                    <th className="text-left py-3 px-2">
-                      <Button
-                        variant="ghost"
-                        onClick={() => handleSort("roleType")}
-                        className="h-auto p-0 font-medium flex items-center gap-1"
-                      >
-                        Role Type
-                        {getSortIcon("roleType")}
-                      </Button>
-                    </th>
-                    <th className="text-left py-3 px-2">
-                      <Button
-                        variant="ghost"
-                        onClick={() => handleSort("seeking")}
-                        className="h-auto p-0 font-medium flex items-center gap-1"
-                      >
-                        Seeking
-                        {getSortIcon("seeking")}
-                      </Button>
-                    </th>
-                    <th className="text-left py-3 px-2">
-                      <Button
-                        variant="ghost"
-                        onClick={() => handleSort("location")}
-                        className="h-auto p-0 font-medium flex items-center gap-1"
-                      >
-                        Location
-                        {getSortIcon("location")}
-                      </Button>
-                    </th>
-                    <th className="text-left py-3 px-2 hidden xl:table-cell">
-                      <span className="font-medium">Bio</span>
-                    </th>
-                    <th className="text-left py-3 px-2 hidden lg:table-cell">
-                      <Button
-                        variant="ghost"
-                        onClick={() => handleSort("submissionDate")}
-                        className="h-auto p-0 font-medium flex items-center gap-1"
-                      >
-                        Submission Date
-                        {getSortIcon("submissionDate")}
-                      </Button>
-                    </th>
-                    <th className="text-left py-3 px-2 w-20">
-                      <span className="font-medium">Actions</span>
-                    </th>
+                    {visibleColumns.name && (
+                      <th className="text-left py-3 px-2 w-32">
+                        <Button
+                          variant="ghost"
+                          onClick={() => handleSort("name")}
+                          className="h-auto p-0 font-medium text-sm flex items-center gap-1"
+                        >
+                          Name
+                          {getSortIcon("name")}
+                        </Button>
+                      </th>
+                    )}
+                    {visibleColumns.email && (
+                      <th className="text-left py-3 px-2 hidden md:table-cell">
+                        <span className="font-medium text-sm">Email</span>
+                      </th>
+                    )}
+                    {visibleColumns.linkedin && (
+                      <th className="text-center py-3 px-2 hidden sm:table-cell">
+                        <span className="font-medium text-sm">LinkedIn</span>
+                      </th>
+                    )}
+                    {visibleColumns.portfolio && (
+                      <th className="text-center py-3 px-2 hidden lg:table-cell">
+                        <span className="font-medium text-sm">Portfolio</span>
+                      </th>
+                    )}
+                    {visibleColumns.roleType && (
+                      <th className="text-left py-3 px-2">
+                        <Button
+                          variant="ghost"
+                          onClick={() => handleSort("roleType")}
+                          className="h-auto p-0 font-medium text-sm flex items-center gap-1"
+                        >
+                          Role Type
+                          {getSortIcon("roleType")}
+                        </Button>
+                      </th>
+                    )}
+                    {visibleColumns.seeking && (
+                      <th className="text-left py-3 px-2">
+                        <Button
+                          variant="ghost"
+                          onClick={() => handleSort("seeking")}
+                          className="h-auto p-0 font-medium text-sm flex items-center gap-1"
+                        >
+                          Seeking
+                          {getSortIcon("seeking")}
+                        </Button>
+                      </th>
+                    )}
+                    {visibleColumns.location && (
+                      <th className="text-left py-3 px-2">
+                        <Button
+                          variant="ghost"
+                          onClick={() => handleSort("location")}
+                          className="h-auto p-0 font-medium text-sm flex items-center gap-1"
+                        >
+                          Location
+                          {getSortIcon("location")}
+                        </Button>
+                      </th>
+                    )}
+                    {visibleColumns.bio && (
+                      <th className="text-left py-3 px-2 hidden xl:table-cell">
+                        <span className="font-medium text-sm">Bio</span>
+                      </th>
+                    )}
+                    {visibleColumns.submissionDate && (
+                      <th className="text-center py-3 px-2 hidden lg:table-cell">
+                        <Button
+                          variant="ghost"
+                          onClick={() => handleSort("submissionDate")}
+                          className="h-auto p-0 font-medium text-sm flex items-center gap-1 mx-auto"
+                        >
+                          Submission Date
+                          {getSortIcon("submissionDate")}
+                        </Button>
+                      </th>
+                    )}
+                    {visibleColumns.actions && (
+                      <th className="text-center py-3 px-2 w-20">
+                        <span className="font-medium text-sm">Actions</span>
+                      </th>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
@@ -470,67 +726,105 @@ function AdminDashboardContent() {
                         selectedIds.has(submission.id) ? "bg-primary/10 border-primary/20" : ""
                       }`}
                     >
-                      <td className="py-3 px-2" onClick={(e) => e.stopPropagation()}>
+                      <td className="py-3 px-2 text-center" onClick={(e) => e.stopPropagation()}>
                         <Checkbox
                           checked={checkedSubmissions.has(submission.id)}
                           onCheckedChange={(checked) => handleCheckboxChange(submission.id, checked as boolean)}
                         />
                       </td>
-                      <td className="py-3 px-2 font-medium text-sm">{submission.name}</td>
-                      <td className="py-3 px-2 text-sm text-muted-foreground hidden md:table-cell">
-                        {submission.email}
-                      </td>
-                      <td className="py-3 px-2 hidden sm:table-cell">
-                        <a
-                          href={submission.linkedin}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline text-sm"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          LinkedIn
-                        </a>
-                      </td>
-                      <td className="py-3 px-2 hidden lg:table-cell">
-                        <a
-                          href={submission.portfolioLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary hover:underline text-sm"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          View
-                        </a>
-                      </td>
-                      <td className="py-3 px-2 text-sm">
-                        <div className="truncate max-w-[120px]" title={getDesignFocusDisplay(submission.roleType)}>
-                          {getDesignFocusDisplay(submission.roleType)}
-                        </div>
-                      </td>
-                      <td className="py-3 px-2">
-                        <Badge className={`text-xs ${getSeekingBadgeClass(submission.seeking)}`}>
-                          {getOpportunitiesDisplay(submission.seeking)}
-                        </Badge>
-                      </td>
-                      <td className="py-3 px-2 text-sm text-muted-foreground">{submission.location}</td>
-                      <td className="py-3 px-2 text-sm text-muted-foreground hidden xl:table-cell max-w-xs">
-                        <div className="truncate max-w-[200px]" title={submission.bio}>
-                          {submission.bio}
-                        </div>
-                      </td>
-                      <td className="py-3 px-2 text-sm text-muted-foreground hidden lg:table-cell">
-                        {new Date(submission.submissionDate).toLocaleDateString()}
-                      </td>
-                      <td className="py-3 px-2" onClick={(e) => e.stopPropagation()}>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => handleDeleteSubmission(submission.id, e)}
-                          className="text-red-600 hover:text-red-800 hover:bg-red-50"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </td>
+                      {visibleColumns.name && (
+                        <td className="py-3 px-2 font-medium text-sm max-w-[128px] truncate">{submission.name}</td>
+                      )}
+                      {visibleColumns.email && (
+                        <td className="py-3 px-2 text-sm text-muted-foreground hidden md:table-cell">
+                          {submission.email}
+                        </td>
+                      )}
+                      {visibleColumns.linkedin && (
+                        <td className="py-3 px-2 hidden sm:table-cell text-center">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            asChild
+                            className="p-1 h-auto text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <a
+                              href={submission.linkedin}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <svg
+                                className="w-4 h-4"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                              </svg>
+                            </a>
+                          </Button>
+                        </td>
+                      )}
+                      {visibleColumns.portfolio && (
+                        <td className="py-3 px-2 hidden lg:table-cell text-center">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            asChild
+                            className="p-1 h-auto text-primary hover:text-primary/80 hover:bg-primary/10"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <a
+                              href={submission.portfolioLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </a>
+                          </Button>
+                        </td>
+                      )}
+                      {visibleColumns.roleType && (
+                        <td className="py-3 px-2 text-sm">
+                          <div className="truncate max-w-[120px]" title={getDesignFocusDisplay(submission.roleType)}>
+                            {getDesignFocusDisplay(submission.roleType)}
+                          </div>
+                        </td>
+                      )}
+                      {visibleColumns.seeking && (
+                        <td className="py-3 px-2">
+                          <Badge className={`text-xs ${getSeekingBadgeClass(submission.seeking)}`}>
+                            {getOpportunitiesDisplay(submission.seeking)}
+                          </Badge>
+                        </td>
+                      )}
+                      {visibleColumns.location && (
+                        <td className="py-3 px-2 text-sm text-muted-foreground max-w-[120px] truncate" title={submission.location}>{submission.location}</td>
+                      )}
+                      {visibleColumns.bio && (
+                        <td className="py-3 px-2 text-sm text-muted-foreground hidden xl:table-cell max-w-xs">
+                          <div className="truncate max-w-[200px]" title={submission.bio}>
+                            {submission.bio}
+                          </div>
+                        </td>
+                      )}
+                      {visibleColumns.submissionDate && (
+                        <td className="py-3 px-2 text-sm text-muted-foreground text-center hidden lg:table-cell">
+                          {new Date(submission.submissionDate).toLocaleDateString()}
+                        </td>
+                      )}
+                      {visibleColumns.actions && (
+                        <td className="py-3 px-2 text-center" onClick={(e) => e.stopPropagation()}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => handleDeleteSubmission(submission.id, e)}
+                            className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>
@@ -543,44 +837,46 @@ function AdminDashboardContent() {
               </div>
             )}
 
-            {totalPages > 1 && (
-              <div className="flex items-center justify-between mt-6">
-                <div className="text-sm text-muted-foreground">
-                  Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
-                  {Math.min(currentPage * itemsPerPage, filteredAndSortedData.length)} of {filteredAndSortedData.length}{" "}
-                  entries
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-                    disabled={currentPage === 1}
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    Previous
-                  </Button>
-                  <span className="text-sm text-muted-foreground">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
-                    disabled={currentPage === totalPages}
-                  >
-                    Next
-                    <ChevronRight className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            )}
 
-                </TabsContent>
-              </Tabs>
+
+              </div>
             )}
           </CardContent>
         </Card>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between mt-6">
+            <div className="text-sm text-muted-foreground">
+              Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
+              {Math.min(currentPage * itemsPerPage, filteredAndSortedData.length)} of {filteredAndSortedData.length}{" "}
+              entries
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Previous
+              </Button>
+              <span className="text-sm text-muted-foreground">
+                Page {currentPage} of {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+              >
+                Next
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </main>
 
       {/* Existing Random Selection Modal */}
