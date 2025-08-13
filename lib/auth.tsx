@@ -17,17 +17,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useEffect(() => {
-    // Check if user was previously authenticated
-    const saved = localStorage.getItem(AUTH_KEY)
-    if (saved === "true") {
-      setIsAuthenticated(true)
+    // Check if user was previously authenticated (only in browser)
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(AUTH_KEY)
+      if (saved === "true") {
+        setIsAuthenticated(true)
+      }
     }
   }, [])
 
   const login = (password: string): boolean => {
     if (password === ADMIN_PASSWORD) {
       setIsAuthenticated(true)
-      localStorage.setItem(AUTH_KEY, "true")
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(AUTH_KEY, "true")
+      }
       return true
     }
     return false
@@ -35,7 +39,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     setIsAuthenticated(false)
-    localStorage.removeItem(AUTH_KEY)
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(AUTH_KEY)
+    }
   }
 
   return (
