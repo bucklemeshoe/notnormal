@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NotNormal Friday Five - Submit Your Portfolio</title>
+    <link rel="icon" type="image/jpeg" href="notnormal_logo.jpg">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="bg-optimized.jpg" as="image" type="image/jpeg" media="(min-width: 769px)">
+    <link rel="preload" href="bg-mobile.jpg" as="image" type="image/jpeg" media="(max-width: 768px)">
+    <link rel="preload" href="notnormal_logo.jpg" as="image" type="image/jpeg">
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black:wght@400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="trail-line"></div>
+    <header class="hero">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="logo-container">
+                    <img src="notnormal_logo.jpg" alt="NotNormal Logo" class="logo" onclick="window.open('https://www.linkedin.com/in/demitrie-recruiter/', '_blank')" />
+                </div>
+                <h1 class="hero-title">NotNormal <span class="highlight">Friday Five</span></h1>
+                <p class="hero-subtitle">Get your design portfolio featured to thousands of LinkedIn followers every Friday</p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">5</span>
+                        <span class="stat-label">Portfolios Weekly</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" id="follower-count">20,518+</span>
+                        <span class="stat-label">LinkedIn Followers</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">Friday</span>
+                        <span class="stat-label">Feature Day</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Why Submit Section -->
+        <section class="why-submit">
+            <div class="container">
+                <h2>Why Submit Your Portfolio?</h2>
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">◆</div>
+                        <h3>Job Market Exposure</h3>
+                        <p>Get noticed by recruiters and hiring managers looking for talented designers</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon">✕</div>
+                        <h3>Design Community Recognition</h3>
+                        <p>Showcase your work to fellow designers and build your professional network</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon">◯</div>
+                        <h3>Valuable Feedback</h3>
+                        <p>Receive constructive feedback from the design community to improve your craft</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Previous Features Section -->
+        <section class="previous-features">
+            <div class="container">
+                <h2>Previous Submissions</h2>
+                <p class="section-subtitle">Meet the talented designers we recently featured in our Friday Five showcase</p>
+                <div class="featured-grid">
+                    <div class="feature-example">
+                        <div class="profile-card">
+                            <div class="profile-header">
+                                <div class="profile-avatar">
+                                    <div class="avatar-container">
+                                        <img src="alexandre_propic.jpg" alt="Alexandre de Carvalho" class="avatar-img">
+                                                                            <div class="spinning-text">
+                                        <svg viewBox="0 0 120 120">
+                                            <defs>
+                                                <linearGradient id="highlight-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                    <stop offset="0%" style="stop-color:#ffffff"/>
+                                                    <stop offset="50%" style="stop-color:#ff69b4"/>
+                                                    <stop offset="100%" style="stop-color:#ffffff"/>
+                                                </linearGradient>
+                                            </defs>
+                                            <path id="circle-path" d="M 60, 60 m -40, 0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0" fill="none"/>
+                                            <text>
+                                                <textPath href="#circle-path">LOOK AT ME • LOOK AT ME • </textPath>
+                                            </text>
+                                        </svg>
+                                    </div>
+                                    </div>
+                                </div>
+                                <div class="profile-info">
+                                    <div class="profile-name-row">
+                                        <h4>Alexandre de Carvalho</h4>
+                                        <span class="status open-to-work status-desktop">Open to Work</span>
+                                    </div>
+                                    <p>Creative Designer</p>
+                                    <span class="status open-to-work status-mobile">Open to Work</span>
+                                </div>
+                            </div>
+                            <div class="profile-portfolio">
+                                <div class="portfolio-gallery">
+                                    <img src="alexandre_port_1.gif" alt="Alexandre's Portfolio Work 1" class="portfolio-preview main-preview">
+                                    <div class="portfolio-thumbnails">
+                                        <img src="alexandre_port_2.gif" alt="Alexandre's Portfolio Work 2" class="portfolio-thumb">
+                                        <img src="alexandre_port_3.png" alt="Alexandre's Portfolio Work 3" class="portfolio-thumb">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="profile-actions">
+                                <a href="https://realale.co/" target="_blank" class="btn-secondary" onclick="console.log('Alexandre portfolio clicked')">View Portfolio</a>
+                                <a href="https://www.linkedin.com/in/alexandre-de-carvalho/" target="_blank" class="btn-primary" onclick="console.log('Alexandre LinkedIn clicked')">Connect</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feature-example">
+                        <div class="profile-card">
+                            <div class="profile-header">
+                                <div class="profile-avatar">
+                                    <div class="avatar-container">
+                                        <img src="delcio_propic.jpg" alt="Délcio Pechiço" class="avatar-img">
+                                                                            <div class="spinning-text">
+                                        <svg viewBox="0 0 120 120">
+                                            <defs>
+                                                <linearGradient id="highlight-gradient-2" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                    <stop offset="0%" style="stop-color:#ffffff"/>
+                                                    <stop offset="50%" style="stop-color:#ff69b4"/>
+                                                    <stop offset="100%" style="stop-color:#ffffff"/>
+                                                </linearGradient>
+                                            </defs>
+                                            <path id="circle-path-2" d="M 60, 60 m -40, 0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0" fill="none"/>
+                                            <text>
+                                                <textPath href="#circle-path-2">LOOK AT ME • LOOK AT ME • </textPath>
+                                            </text>
+                                        </svg>
+                                    </div>
+                                    </div>
+                                </div>
+                                <div class="profile-info">
+                                    <div class="profile-name-row">
+                                        <h4>Délcio Pechiço</h4>
+                                        <span class="status not-looking status-desktop">Just Flexing</span>
+                                    </div>
+                                    <p>Designer</p>
+                                    <span class="status not-looking status-mobile">Just Flexing</span>
+                                </div>
+                            </div>
+                            <div class="profile-portfolio">
+                                <div class="portfolio-gallery">
+                                    <img src="delcio_work_1.webp" alt="Délcio's Design Work 1" class="portfolio-preview main-preview">
+                                    <div class="portfolio-thumbnails">
+                                        <img src="delcio_work_2.avif" alt="Délcio's Design Work 2" class="portfolio-thumb">
+                                        <img src="delcio_work_3.avif" alt="Délcio's Design Work 3" class="portfolio-thumb">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="profile-actions">
+                                <a href="https://delciodesigns.com/" target="_blank" class="btn-secondary" onclick="console.log('Délcio portfolio clicked')">View Portfolio</a>
+                                <a href="https://www.linkedin.com/in/delcio-pechico/" target="_blank" class="btn-primary" onclick="console.log('Délcio LinkedIn clicked')">Connect</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Submission Form Section -->
+        <section class="submission-form">
+            <div class="container">
+                <div class="form-header">
+                    <h2>Submit Your Portfolio</h2>
+                    <div class="form-intro">
+                        <div class="dimitrie-profile">
+                            <img src="demitrie_propic.jpg" alt="Dimitrie" class="profile-pic" />
+                        </div>
+                        <p class="form-subtitle">Ready to be featured? Fill out the form below and we'll consider your portfolio for our Friday Five showcase.</p>
+                    </div>
+                </div>
+                
+                <form id="portfolioForm" class="portfolio-form" name="portfolio-submission" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" action="/" enctype="multipart/form-data">
+                    <!-- Hidden honeypot field for spam protection -->
+                    <input type="hidden" name="bot-field" />
+                    
+                    <!-- Basic Information -->
+                    <div class="form-section">
+                        <h3>Basic Information</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="fullName">Full Name *</label>
+                                <input type="text" id="fullName" name="fullName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email Address *</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="linkedin">LinkedIn Profile</label>
+                                <input type="url" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/yourprofile">
+                            </div>
+                            <div class="form-group">
+                                <label for="location">Location</label>
+                                <input type="text" id="location" name="location" placeholder="City, Country">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Portfolio Details -->
+                    <div class="form-section">
+                        <h3>Portfolio Details</h3>
+                        <div class="form-group">
+                            <label for="portfolioLink">Portfolio Link *</label>
+                            <input type="url" id="portfolioLink" name="portfolioLink" required placeholder="https://yourportfolio.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="designFocus">Primary Design Focus *</label>
+                            <select id="designFocus" name="designFocus" required>
+                                <option value="">Select your primary focus</option>
+                                <option value="ui-ux">UI/UX Design</option>
+                                <option value="graphic">Graphic Design</option>
+                                <option value="branding">Branding</option>
+                                <option value="illustration">Illustration</option>
+                                <option value="web">Web Design</option>
+                                <option value="mobile">Mobile App Design</option>
+                                <option value="product">Product Design</option>
+                                <option value="motion">Motion Graphics</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bio">Tell Us About Yourself</label>
+                            <textarea id="bio" name="bio" rows="4" placeholder="Share a brief description of your design journey, passions, and what makes your work unique..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="opportunities">What type of opportunities are you looking for? *</label>
+                            <select id="opportunities" name="opportunities" required>
+                                <option value="">Select opportunity type</option>
+                                <option value="freelance">Freelance Projects</option>
+                                <option value="full-time">Full-time Positions</option>
+                                <option value="collaboration">Design Collaborations</option>
+                                <option value="portfolio-flex">Just Flexing My Portfolio</option>
+                                <option value="feedback">Looking for Feedback</option>
+                                <option value="networking">Networking & Community</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="portfolioFile">Upload Portfolio File (Optional)</label>
+                            <input type="file" id="portfolioFile" name="portfolioFile" accept=".pdf,.zip,.rar" class="file-input">
+                            <div class="file-input-helper">
+                                <span>Drop your portfolio file here or click to browse</span>
+                                <small>Accepted formats: PDF, ZIP, RAR (Max 10MB)</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Final Steps -->
+                    <div class="form-section">
+                        <h3>Final Steps</h3>
+                        <div class="form-group checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="consent" name="consent" required>
+                                <span class="checkmark"></span>
+                                I agree to have my portfolio considered for NotNormal's Friday Five and shared publicly if selected.
+                            </label>
+                        </div>
+                        
+
+
+                        <button type="submit" class="btn-submit">Submit Portfolio</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq">
+            <div class="container">
+                <div class="faq-title">
+                    <div class="faq-spinning-container">
+                        <h2>FAQ's</h2>
+                        <div class="faq-spinning-text">
+                            <svg viewBox="0 0 200 200">
+                                <defs>
+                                    <linearGradient id="faq-highlight-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:#ffffff"/>
+                                        <stop offset="50%" style="stop-color:#6495ED"/>
+                                        <stop offset="100%" style="stop-color:#ffffff"/>
+                                    </linearGradient>
+                                </defs>
+                                <path id="faq-circle-path" d="M 100, 100 m -70, 0 a 70,70 0 1,1 140,0 a 70,70 0 1,1 -140,0" fill="none"/>
+                                <text>
+                                    <textPath href="#faq-circle-path">WHAT ELSE? • WHAT ELSE? • WHAT ELSE? • </textPath>
+                                </text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="faq-grid">
+                    <div class="faq-item">
+                        <h4>When will I know if I'm selected?</h4>
+                        <p>We review submissions weekly and will notify selected designers by Thursday before their Friday feature.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4>What if I'm not selected this week?</h4>
+                        <p>Don't worry! All submissions remain in our roster and will be considered for future Friday features.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4>Can I resubmit an updated portfolio?</h4>
+                        <p>Absolutely! Feel free to resubmit if you've made significant updates to your portfolio.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 NotNormal Friday Five. Empowering designers, one Friday at a time.</p>
+            <p><a href="https://www.linkedin.com/in/jared-buckley-3a432733/" target="_blank">Built with 🫶🏾 by Jared</a></p>
+        </div>
+    </footer>
+
+    <!-- Hidden form for Netlify to detect during build -->
+    <form name="portfolio-submission" data-netlify="true" enctype="multipart/form-data" hidden>
+        <input type="text" name="fullName" />
+        <input type="email" name="email" />
+        <input type="url" name="linkedin" />
+        <input type="text" name="location" />
+        <input type="url" name="portfolioLink" />
+        <select name="designFocus">
+            <option value="ui-ux">UI/UX Design</option>
+            <option value="graphic">Graphic Design</option>
+            <option value="branding">Branding</option>
+            <option value="illustration">Illustration</option>
+            <option value="web">Web Design</option>
+            <option value="mobile">Mobile App Design</option>
+            <option value="product">Product Design</option>
+            <option value="motion">Motion Graphics</option>
+            <option value="other">Other</option>
+        </select>
+        <textarea name="bio"></textarea>
+        <select name="opportunities">
+            <option value="freelance">Freelance Projects</option>
+            <option value="full-time">Full-time Positions</option>
+            <option value="collaboration">Design Collaborations</option>
+            <option value="portfolio-flex">Just Flexing My Portfolio</option>
+            <option value="feedback">Looking for Feedback</option>
+            <option value="networking">Networking & Community</option>
+        </select>
+        <input type="file" name="portfolioFile" />
+        <input type="checkbox" name="consent" />
+    </form>
+
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script src="script.js"></script>
+</body>
+</html> 

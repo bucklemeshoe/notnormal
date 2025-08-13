@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supabase Connection Test</title>
+</head>
+<body>
+    <h1>Supabase Connection Test</h1>
+    <button onclick="testConnection()">Test Supabase Connection</button>
+    <div id="result"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        async function testConnection() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                // Initialize Supabase
+                const supabase = window.supabase.createClient(
+                    'https://fiuxkfnqmuufmrcnflxu.supabase.co',
+                    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpdXhrZm5xbXV1Zm1yY25mbHh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNzQ2OTYsImV4cCI6MjA3MDY1MDY5Nn0.iA0G5PtJYlOFdSlwGSvs-BNhVE8MCzy4HA9_I0uWKMU'
+                );
+                
+                console.log('✅ Supabase client created:', supabase);
+                
+                // Test data insertion
+                const testData = {
+                    full_name: 'Test Submission',
+                    email: 'test@example.com',
+                    portfolio_url: 'https://test.com',
+                    design_focus: 'ui-ux',
+                    opportunities: 'freelance',
+                    created_at: new Date().toISOString()
+                };
+                
+                console.log('💾 Attempting to insert test data...');
+                
+                const { data, error } = await supabase
+                    .from('portfolio_submissions')
+                    .insert([testData])
+                    .select();
+                
+                if (error) {
+                    console.error('❌ Supabase error:', error);
+                    resultDiv.innerHTML = `<div style="color: red;">❌ Error: ${error.message}</div>`;
+                    return;
+                }
+                
+                console.log('✅ Success:', data);
+                resultDiv.innerHTML = `<div style="color: green;">✅ Successfully inserted test data! Check console for details.</div>`;
+                
+            } catch (error) {
+                console.error('❌ Test failed:', error);
+                resultDiv.innerHTML = `<div style="color: red;">❌ Test failed: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

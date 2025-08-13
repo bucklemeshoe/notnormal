@@ -14,7 +14,18 @@ class PortfolioFormHandler {
             userTemplateId: 'template_user_confirm'         // User confirmation template
         };
         
-        // Notion Integration Configuration
+        // Supabase Configuration
+        this.supabaseConfig = {
+            url: 'https://your-project.supabase.co', // Will be set from environment or config
+            anonKey: 'your-anon-key', // Will be set from environment or config
+            enabled: true // Enable Supabase integration
+        };
+        
+        // Initialize Supabase client
+        this.supabase = null;
+        this.initSupabase();
+        
+        // Notion Integration Configuration (kept for reference)
         this.notionConfig = {
             token: 'YOUR_NOTION_INTEGRATION_TOKEN', // Get from Notion integrations
             databaseId: 'YOUR_NOTION_DATABASE_ID',  // Get from your Notion database URL
@@ -28,6 +39,28 @@ class PortfolioFormHandler {
         this.setupEventListeners();
         this.setupFileUpload();
         this.setupFormValidation();
+    }
+
+    initSupabase() {
+        // Check if Supabase is available in the browser
+        if (typeof window !== 'undefined' && window.supabase) {
+            // Get config from meta tags or use defaults for local development
+            const supabaseUrl = document.querySelector('meta[name="supabase-url"]')?.content || 'https://fiuxkfnqmuufmrcnflxu.supabase.co';
+            const supabaseKey = document.querySelector('meta[name="supabase-key"]')?.content || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpdXhrZm5xbXV1Zm1yY25mbHh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNzQ2OTYsImV4cCI6MjA3MDY1MDY5Nn0.iA0G5PtJYlOFdSlwGSvs-BNhVE8MCzy4HA9_I0uWKMU';
+            
+            console.log('🔧 Supabase URL:', supabaseUrl);
+            console.log('🔧 Supabase Key length:', supabaseKey.length);
+            
+            try {
+                this.supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+                console.log('✅ Supabase client initialized successfully');
+            } catch (error) {
+                console.error('❌ Failed to initialize Supabase:', error);
+                this.supabase = null;
+            }
+        } else {
+            console.log('⚠️ Supabase not available - submissions will only go to EmailJS');
+        }
     }
 
     setupEventListeners() {
@@ -344,23 +377,15 @@ class PortfolioFormHandler {
             }
         }
 
-        // Submit to Netlify Forms
-        const response = await fetch('/', {
-            method: 'POST',
-            body: formData
-        });
+        // Skip Netlify Forms submission when using Supabase
+        // Note: We're now using Supabase for data storage instead
+        console.log('📧 Processing submission via EmailJS + Supabase...');
         
-        if (!response.ok) {
-            throw new Error(`Submission failed: ${response.status}`);
-        }
-        
-        console.log('Form submitted successfully to Netlify');
-        
-        // Send emails via EmailJS if configured
+        // Send emails via EmailJS if configured (UNCHANGED)
         await this.sendEmailNotifications(emailData);
         
-        // Send data to Notion if configured
-        await this.sendToNotion(emailData);
+        // Send data to Supabase (NEW - additive only)
+        await this.saveToSupabase(emailData);
         
         return { success: true };
     }
@@ -614,6 +639,51 @@ class PortfolioFormHandler {
                this.notionConfig.databaseId !== 'YOUR_NOTION_DATABASE_ID' &&
                this.notionConfig.token.length > 0 &&
                this.notionConfig.databaseId.length > 0;
+    }
+
+    async saveToSupabase(formData) {
+        // Skip if Supabase client is not available
+        if (!this.supabase) {
+            console.log('⚠️ Supabase not available - submission saved via EmailJS only');
+            return;
+        }
+
+        try {
+            console.log('💾 Saving submission to Supabase...');
+            
+            // Prepare data for Supabase
+            const supabaseData = {
+                full_name: formData.fullName,
+                email: formData.email,
+                linkedin_url: formData.linkedin || null,
+                location: formData.location || null,
+                portfolio_url: formData.portfolioLink,
+                design_focus: formData.designFocus,
+                opportunities: formData.opportunities,
+                bio: formData.bio || null,
+                portfolio_file_name: formData.portfolioFile || null,
+                portfolio_file_size: null,
+                created_at: new Date().toISOString()
+            };
+
+            // Insert into Supabase
+            const { data, error } = await this.supabase
+                .from('portfolio_submissions')
+                .insert([supabaseData])
+                .select();
+
+            if (error) {
+                console.error('❌ Supabase save failed:', error);
+                // Don't throw - let EmailJS still work
+                return;
+            }
+
+            console.log('✅ Successfully saved to Supabase:', data);
+            
+        } catch (error) {
+            console.error('❌ Failed to save to Supabase:', error);
+            // Don't throw error - form submission should still succeed via EmailJS
+        }
     }
 
     setLoadingState(isLoading) {
