@@ -881,7 +881,7 @@ function AdminDashboardContent() {
 
       {/* Existing Random Selection Modal */}
       <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="w-[95vw] min-w-[600px] max-w-4xl max-h-[90vh] overflow-y-auto overflow-x-hidden">
+        <DialogContent className="w-[98vw] min-w-[800px] max-w-6xl max-h-[95vh] overflow-y-auto p-6 pb-0">
           <DialogHeader>
             <DialogTitle className="text-2xl font-semibold">Random Selection - 5 Candidates</DialogTitle>
           </DialogHeader>
@@ -894,14 +894,14 @@ function AdminDashboardContent() {
                   <Badge className={`${getSeekingBadgeClass(person.seeking)}`}>{getOpportunitiesDisplay(person.seeking)}</Badge>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-4">
-                  <div>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-4">
+                  <div className="col-span-1 md:col-span-2 xl:col-span-1">
                     <p className="text-sm font-medium text-muted-foreground mb-1">Portfolio</p>
                     <a
                       href={person.portfolioLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-primary hover:underline text-sm break-all"
+                      className="text-primary hover:underline text-sm break-all block"
                     >
                       {person.portfolioLink}
                     </a>
@@ -917,9 +917,9 @@ function AdminDashboardContent() {
                     <p className="text-sm">{getDesignFocusDisplay(person.roleType)}</p>
                   </div>
 
-                  <div>
+                  <div className="md:col-span-2 xl:col-span-1">
                     <p className="text-sm font-medium text-muted-foreground mb-1">Email</p>
-                    <p className="text-sm">{person.email}</p>
+                    <p className="text-sm break-all">{person.email}</p>
                   </div>
                 </div>
 
@@ -935,7 +935,7 @@ function AdminDashboardContent() {
             ))}
           </div>
 
-          <DialogFooter className="gap-2">
+          <DialogFooter className="gap-2 mt-6 pt-4 pb-6 px-6 -mx-6 -mb-6 border-t sticky bottom-0 bg-background">
             <Button variant="outline" onClick={() => setShowModal(false)}>
               <X className="w-4 h-4 mr-2" />
               Cancel
@@ -950,7 +950,7 @@ function AdminDashboardContent() {
 
       {/* New Single Entry Modal */}
       <Dialog open={showEntryModal} onOpenChange={setShowEntryModal}>
-        <DialogContent className="w-[95vw] min-w-[600px] max-w-4xl max-h-[90vh] overflow-y-auto overflow-x-hidden">
+        <DialogContent className="w-[98vw] min-w-[800px] max-w-6xl max-h-[95vh] overflow-y-auto p-6 pb-0">
           <DialogHeader>
             <DialogTitle className="text-2xl font-semibold">{selectedEntry?.name}</DialogTitle>
           </DialogHeader>
@@ -1018,7 +1018,7 @@ function AdminDashboardContent() {
             </div>
           )}
 
-          <DialogFooter>
+          <DialogFooter className="mt-6 pt-4 pb-6 px-6 -mx-6 -mb-6 border-t sticky bottom-0 bg-background">
             <Button variant="outline" onClick={() => setShowEntryModal(false)}>
               <X className="w-4 h-4 mr-2" />
               Close
