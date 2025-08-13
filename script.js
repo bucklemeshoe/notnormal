@@ -14,6 +14,13 @@ class PortfolioFormHandler {
             userTemplateId: 'template_user_confirm'         // User confirmation template
         };
         
+        // Notion Integration Configuration
+        this.notionConfig = {
+            token: 'YOUR_NOTION_INTEGRATION_TOKEN', // Get from Notion integrations
+            databaseId: 'YOUR_NOTION_DATABASE_ID',  // Get from your Notion database URL
+            enabled: false // Set to true when configured
+        };
+        
         this.init();
     }
 
@@ -352,6 +359,9 @@ class PortfolioFormHandler {
         // Send emails via EmailJS if configured
         await this.sendEmailNotifications(emailData);
         
+        // Send data to Notion if configured
+        await this.sendToNotion(emailData);
+        
         return { success: true };
     }
 
@@ -361,7 +371,14 @@ class PortfolioFormHandler {
             if (value instanceof File) {
                 data[key] = value.name ? `${value.name} (${this.formatFileSize(value.size)})` : 'No file uploaded';
             } else {
-                data[key] = value;
+                // Map dropdown values to their full display text for EmailJS
+                if (key === 'designFocus') {
+                    data[key] = this.mapDesignFocus(value);
+                } else if (key === 'opportunities') {
+                    data[key] = this.mapOpportunities(value);
+                } else {
+                    data[key] = value;
+                }
             }
         }
         
@@ -432,6 +449,171 @@ class PortfolioFormHandler {
         return this.emailJSConfig.publicKey !== 'YOUR_EMAILJS_PUBLIC_KEY' &&
                this.emailJSConfig.serviceId !== 'YOUR_SERVICE_ID' &&
                typeof emailjs !== 'undefined';
+    }
+
+    async sendToNotion(formData) {
+        // Skip if Notion not configured
+        if (!this.isNotionConfigured()) {
+            console.log('Notion not configured - skipping Notion integration');
+            return;
+        }
+
+        try {
+            const notionData = this.prepareNotionData(formData);
+            
+            const response = await fetch('https://api.notion.com/v1/pages', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.notionConfig.token}`,
+                    'Content-Type': 'application/json',
+                    'Notion-Version': '2022-06-28'
+                },
+                body: JSON.stringify({
+                    parent: {
+                        database_id: this.notionConfig.databaseId
+                    },
+                    properties: notionData
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`Notion API error: ${response.status} - ${errorData.message}`);
+            }
+
+            const result = await response.json();
+            console.log('Data sent to Notion successfully:', result.id);
+            
+        } catch (error) {
+            console.error('Failed to send data to Notion:', error);
+            // Don't throw error - form submission should still succeed
+        }
+    }
+
+    prepareNotionData(formData) {
+        // Map form data to Notion database properties
+        const notionProperties = {
+            "Name": {
+                "title": [
+                    {
+                        "text": {
+                            "content": formData.fullName || "Unknown"
+                        }
+                    }
+                ]
+            },
+            "Email": {
+                "email": formData.email || ""
+            },
+            "Status": {
+                "select": {
+                    "name": "New"
+                }
+            },
+            "Submission Date": {
+                "date": {
+                    "start": new Date().toISOString().split('T')[0]
+                }
+            },
+            "Portfolio URL": {
+                "url": formData.portfolioLink || ""
+            },
+            "Design Focus": {
+                "select": {
+                    "name": this.mapDesignFocus(formData.designFocus)
+                }
+            },
+            "Opportunities": {
+                "select": {
+                    "name": this.mapOpportunities(formData.opportunities)
+                }
+            },
+            "Priority": {
+                "select": {
+                    "name": "Medium"
+                }
+            }
+        };
+
+        // Add optional fields if they exist
+        if (formData.linkedin) {
+            notionProperties["LinkedIn"] = {
+                "url": formData.linkedin
+            };
+        }
+
+        if (formData.location) {
+            notionProperties["Location"] = {
+                "rich_text": [
+                    {
+                        "text": {
+                            "content": formData.location
+                        }
+                    }
+                ]
+            };
+        }
+
+        if (formData.bio) {
+            notionProperties["Bio"] = {
+                "rich_text": [
+                    {
+                        "text": {
+                            "content": formData.bio.substring(0, 2000) // Limit to 2000 chars
+                        }
+                    }
+                ]
+            };
+        }
+
+        if (formData.portfolioFile && formData.portfolioFile !== 'No file uploaded') {
+            notionProperties["Portfolio File"] = {
+                "rich_text": [
+                    {
+                        "text": {
+                            "content": formData.portfolioFile
+                        }
+                    }
+                ]
+            };
+        }
+
+        return notionProperties;
+    }
+
+    mapDesignFocus(focus) {
+        const focusMap = {
+            'ui-ux': 'UI/UX Design',
+            'graphic': 'Graphic Design',
+            'branding': 'Branding',
+            'illustration': 'Illustration',
+            'web': 'Web Design',
+            'mobile': 'Mobile App Design',
+            'product': 'Product Design',
+            'motion': 'Motion Graphics',
+            'other': 'Other'
+        };
+        return focusMap[focus] || 'Other';
+    }
+
+    mapOpportunities(opportunity) {
+        const opportunityMap = {
+            'freelance': 'Freelance Projects',
+            'full-time': 'Full-time Positions',
+            'collaboration': 'Design Collaborations',
+            'portfolio-flex': 'Just Flexing',
+            'feedback': 'Looking for Feedback',
+            'networking': 'Networking & Community'
+        };
+        return opportunityMap[opportunity] || 'Other';
+    }
+
+    isNotionConfigured() {
+        return this.notionConfig.enabled &&
+               this.notionConfig.token !== 'YOUR_NOTION_INTEGRATION_TOKEN' &&
+               this.notionConfig.databaseId !== 'YOUR_NOTION_DATABASE_ID' &&
+               this.notionConfig.token.length > 0 &&
+               this.notionConfig.databaseId.length > 0;
     }
 
     setLoadingState(isLoading) {
